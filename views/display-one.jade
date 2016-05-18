@@ -1,7 +1,9 @@
 extend layout
 
 block content
-  h2=item.name
+  h2 Name: #{item.name}
+  h4 Color: #{item.color[0].colorName}
+  h4 Color Code: #{item.color[0].colorCode}
 
   ul
     li
