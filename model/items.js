@@ -6,9 +6,13 @@ var colorSchema = new mongoose.Schema({
     colorCode: Number
 });
 
+var Color = mongoose.model('Color', colorSchema);
+
+
+
 var itemSchema = new mongoose.Schema({
     name: String,
-    color: [colorSchema]
+    color: {type: mongoose.Schema.Types.ObjectId, ref: 'Color'}
 });
 
 module.exports = {
