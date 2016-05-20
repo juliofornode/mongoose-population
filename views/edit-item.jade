@@ -5,9 +5,9 @@ block content
     label(for='name') Name:
     input(type='text' id='name' name='name' value=item.name)
     label(for='colorName') Color Name:
-    input(id='colorName' name='colorName' type='text' value=item.color[0].colorName)
+    input(id='colorName' name='colorName' type='text' value=item.color.colorName)
     label(for='colorCode') Color Code:
-    input(id='colorCode' name='colorCode' type='number' value=item.color[0].colorCode)
+    input(id='colorCode' name='colorCode' type='number' value=item.color.colorCode)
     input(type='submit' value='enter')
 
     ul

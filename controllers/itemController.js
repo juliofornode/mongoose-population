@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Item = mongoose.model('Item');
+var Color = mongoose.model('Color');
 
 
 exports.home = function(req, res) {
@@ -11,17 +12,36 @@ exports.create = function(req, res) {
 };
 
 exports.doCreate = function(req, res) {
-    var item = new Item({
-      name: req.body.name,
-      color: {
-          colorName: req.body.colorName,
-          colorCode: req.body.colorCode
-      }
+
+    var myColor = new Color({
+        colorName: req.body.colorName,
+        colorCode: req.body.colorCode
     });
-    item.save(function(error, result) {
-        console.log(result + ' has been saved');
-        res.redirect('/');
+
+    myColor.save(function(error, result) {
+        console.log('the color saved is ' + result);
     });
+
+    var myItem = new Item({
+        name: req.body.name,
+        color: myColor._id
+    });
+
+    myItem.save(function(error, result) {
+        console.log('the item saved is ' + result);
+    });
+
+    Item
+        .find({name: req.body.name})
+        .populate('Color', 'color')
+        .exec(function(error, result) {
+            console.log('the item populated is ' + result)
+        });
+
+    res.send('this is just a test');
+
+
+
 };
 
 exports.displayAll = function(req, res) {
@@ -45,24 +65,31 @@ exports.edit = function(req, res) {
 };
 
 exports.doEdit = function(req, res) {
-    Item.findById(req.params.id, function(error, result) {
-        result.name = req.body.name;
-        result.color = {
-            colorName: req.body.colorName,
-            colorCode: req.body.colorCode
-        };
-        result.save(function(error, editado) {
-            console.log('item edited: ' + editado.name);
-            res.render('display-one', {pageTitle: 'Edit Item', item: editado});
+
+    Item.findById(req.params.id)
+        .populate('color')
+        .exec(function(error, result) {
+            console.log('item to edit: ' + result);
+            result.name = req.body.name;
+            result.color = {
+                colorName: req.body.colorName,
+                colorCode: req.body.colorCode
+            };
+            result.save(function(error, editado) {
+                console.log('item edited: ' + result);
+                res.render('display-one', {pageTitle: 'Edit Item', item: result});
+            });
         });
-    })
+
 };
 
 exports.delete = function(req, res) {
-    Item.findById(req.params.id, function(error, result) {
+    Item.findById(req.params.id)
+        .populate('color', 'colorName')
+        .exec(function(error, result) {
         console.log('item to delete: ' + result.name);
         res.render('delete-item', {pageTitle: 'Delete Item', item: result});
-    })
+        })
 };
 
 exports.doDelete = function(req, res) {
@@ -76,17 +103,38 @@ exports.doDelete = function(req, res) {
 };
 
 
-exports.mySubdocument = function(req, res) {
-    Item.findOneAndUpdate({name: 'Julio'}, {color: {colorName: 'blue'}} ,{new: true}, function(error, result) {
-        //result.color = [{colorName: 'blue', colorCode: 8}];
-        //result.color[0].colorName = 'green';
-        //result.save();
-        console.log(JSON.stringify(result));
-        res.send(result);
+/*exports.getPopulation = function(req, res) {
 
-    })
+    var myColor = new Color({
+        colorName: req.body.colorName,
+        colorCode: req.body.colorCode
+    });
 
-}
+    myColor.save(function(error, result) {
+        console.log('color saved: ' + result);
+    });
+
+
+    var myItem = new Item({
+        name: req.body.name,
+        color: myColor._id
+    });
+
+    console.log('item creado: ' + myItem);
+
+    myItem.save();
+
+    res.render('my-population')
+
+    Item
+        .findOne({name: req.params.name})
+        .populate('color', 'colorName')
+        .exec(function(error, result) {
+            res.send(result.color.colorName);
+        });
+
+};*/
+
 
 
 

@@ -9,10 +9,12 @@ var colorSchema = new mongoose.Schema({
 var Color = mongoose.model('Color', colorSchema);
 
 
-
 var itemSchema = new mongoose.Schema({
     name: String,
-    color: {type: mongoose.Schema.Types.ObjectId, ref: 'Color'}
+    //one-to-one
+    color: {type: mongoose.Schema.Types.ObjectId, ref: 'Color'},
+    //one-to-many: array of objects
+    backgroundColor: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Color'} ]
 });
 
 module.exports = {
